@@ -1,4 +1,8 @@
-from app.services.data_loader import get_targets, get_expressions, get_available_cancers
+from app.services.data_loader import (
+    get_available_cancers,
+    get_expressions,
+    get_targets,
+)
 
 
 def test_get_targets_lung():
@@ -9,8 +13,16 @@ def test_get_targets_lung():
 def test_get_targets_breast():
     targets = get_targets("breast")
     assert sorted(targets) == [
-        "AKT1", "BRCA1", "BRCA2", "CDH1", "ESR1",
-        "GATA3", "HER2", "MAP3K1", "PIK3CA", "TP53",
+        "AKT1",
+        "BRCA1",
+        "BRCA2",
+        "CDH1",
+        "ESR1",
+        "GATA3",
+        "HER2",
+        "MAP3K1",
+        "PIK3CA",
+        "TP53",
     ]
 
 
@@ -50,6 +62,14 @@ def test_get_expressions_unknown_cancer():
 def test_get_available_cancers():
     cancers = get_available_cancers()
     assert set(cancers) == {
-        "breast", "colorectal", "gastric", "glioblastoma",
-        "lung", "melanoma", "ovarian", "pancreatic", "prostate", "renal",
+        "breast",
+        "colorectal",
+        "gastric",
+        "glioblastoma",
+        "lung",
+        "melanoma",
+        "ovarian",
+        "pancreatic",
+        "prostate",
+        "renal",
     }
