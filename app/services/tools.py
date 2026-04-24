@@ -1,15 +1,17 @@
 from typing import Any
 
+from anthropic.types import ToolParam
+
 import app.services.data_loader as data_module
 
-TOOL_DEFINITIONS = [
-    {
-        "name": "get_targets",
-        "description": (
+TOOL_DEFINITIONS: list[ToolParam] = [
+    ToolParam(
+        name="get_targets",
+        description=(
             "Return a list of genes associated with a given cancer type. "
             "Use this when the user asks about genes involved in a specific cancer."
         ),
-        "input_schema": {
+        input_schema={
             "type": "object",
             "properties": {
                 "cancer_name": {
@@ -21,15 +23,15 @@ TOOL_DEFINITIONS = [
             },
             "required": ["cancer_name"],
         },
-    },
-    {
-        "name": "get_expressions",
-        "description": (
+    ),
+    ToolParam(
+        name="get_expressions",
+        description=(
             "Return median expression values for a list of genes within a "
             "specific cancer type. Use this when the user asks about expression "
             "levels or median values of specific genes for a cancer."
         ),
-        "input_schema": {
+        input_schema={
             "type": "object",
             "properties": {
                 "cancer_name": {
@@ -46,7 +48,7 @@ TOOL_DEFINITIONS = [
             },
             "required": ["cancer_name", "genes"],
         },
-    },
+    ),
 ]
 
 

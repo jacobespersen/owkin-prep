@@ -1,11 +1,12 @@
 import re
 
+from anthropic.types import MessageParam
 from pydantic import BaseModel, SecretStr, field_validator
 
 
 class ChatRequest(BaseModel):
     api_key: SecretStr
-    messages: list[dict]
+    messages: list[MessageParam]
 
     @field_validator("api_key", mode="before")
     @classmethod
