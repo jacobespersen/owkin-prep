@@ -7,5 +7,48 @@
     <link rel="stylesheet" href="/static/css/style.css">
 </head>
 <body>
+    <div class="header">
+        <div class="header-brand">
+            <div class="header-logo">K</div>
+            <h1>Gene Cancer Agent <span>by jacobespersen</span></h1>
+        </div>
+        <div class="api-key-row">
+            <label>Anthropic API Key</label>
+            <input type="password" id="apiKey" placeholder="sk-ant-api03-...">
+        </div>
+    </div>
+    <div class="chat-area" id="chatArea">
+        <div class="welcome" id="welcome">
+            <div class="welcome-icon">K</div>
+            <h2>Gene Expression Explorer</h2>
+            <p>Ask questions about gene expression across cancer types. Powered by real expression data.</p>
+            <div class="welcome-suggestions">
+                <button class="suggestion-chip" onclick="useSuggestion(this)">How can you help me?</button>
+                <button class="suggestion-chip" onclick="useSuggestion(this)">What are the main genes involved in lung cancer?</button>
+                <button class="suggestion-chip" onclick="useSuggestion(this)">What is the median value expression of genes involved in breast cancer?</button>
+                <button class="suggestion-chip" onclick="useSuggestion(this)">What is the median value expression of genes involved in gastric cancer?</button>
+            </div>
+        </div>
+    </div>
+    <div class="input-wrapper">
+        <div class="input-area">
+            <input type="text" id="userInput" placeholder="Ask follow up" autofocus>
+            <button class="send-btn" id="sendBtn" onclick="sendMessage()" aria-label="Send message">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="22" y1="2" x2="11" y2="13"></line>
+                    <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+                </svg>
+            </button>
+        </div>
+    </div>
+    <div class="footer">
+        <div class="gradient-bar"></div>
+        <div class="footer-text">Gene Cancer Agent beta &mdash; accuracy not guaranteed. Verify key info.</div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/dompurify/dist/purify.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <script src="/static/js/chat.js"></script>
 </body>
 </html>
+
+
