@@ -33,7 +33,8 @@ def run_agent_loop(api_key: SecretStr, messages: list[MessageParam]) -> str:
         )
 
         logger.info(
-            "Claude responded | stop_reason=%s | content_blocks=%d | usage(in=%d, out=%d)",
+            "Claude responded | stop_reason=%s | content_blocks=%d"
+            " | usage(in=%d, out=%d)",
             response.stop_reason,
             len(response.content),
             response.usage.input_tokens,
@@ -86,12 +87,8 @@ def run_agent_loop(api_key: SecretStr, messages: list[MessageParam]) -> str:
                     )
                 )
 
-        logger.info(
-            "Sending %d tool result(s) back to Claude", len(tool_results)
-        )
+        logger.info("Sending %d tool result(s) back to Claude", len(tool_results))
         messages.append(MessageParam(role="user", content=tool_results))
 
     logger.error("Agent loop exceeded max iterations (%d)", MAX_ITERATIONS)
     raise RuntimeError("Agent loop exceeded max iterations")
-
-

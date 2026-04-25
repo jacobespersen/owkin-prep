@@ -1,3 +1,4 @@
+import pytest
 from app.services.tools import TOOL_DEFINITIONS, build_system_prompt, execute_tool
 
 
@@ -20,14 +21,14 @@ def test_execute_get_expressions():
 
 
 def test_execute_unknown_tool():
-    result = execute_tool("unknown_tool", {})
-    assert "error" in result.lower() or "unknown" in result.lower()
+    with pytest.raises(ValueError, match="Unknown tool"):
+        execute_tool("unknown_tool", {})
 
 
 def test_execute_blocked_by_allowlist():
     """Tools not in the allowlist are rejected even if they exist on the module."""
-    result = execute_tool("get_available_cancers", {})
-    assert "error" in result.lower() or "unknown" in result.lower()
+    with pytest.raises(ValueError, match="Unknown tool"):
+        execute_tool("get_available_cancers", {})
 
 
 def test_system_prompt_contains_all_cancer_types():

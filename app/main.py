@@ -28,6 +28,3 @@ async def health():
 @app.get("/")
 async def root():
     return FileResponse(str(TEMPLATES_DIR / "index.html"))
-
-
-

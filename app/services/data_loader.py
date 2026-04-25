@@ -22,4 +22,3 @@ def get_expressions(cancer_name: str, genes: list[str]) -> dict[str, float]:
 def get_available_cancers() -> list[str]:
     """Return all unique cancer types in the dataset."""
     return sorted(_df["cancer_indication"].unique().tolist())
-
