@@ -74,10 +74,10 @@ def run_agent_loop(api_key: SecretStr, messages: list[MessageParam]) -> str:
                         block.name,
                         content,
                     )
-                except Exception as e:
+                except (ValueError, KeyError, TypeError) as e:
                     content = f"Tool execution failed: {e}"
                     is_error = True
-                    logger.error("Tool failed | name=%s | error=%s", block.name, e)
+                    logger.exception("Tool failed | name=%s | error=%s", block.name, e)
                 tool_results.append(
                     ToolResultBlockParam(
                         type="tool_result",
