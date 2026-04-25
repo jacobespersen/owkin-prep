@@ -52,11 +52,16 @@ TOOL_DEFINITIONS: list[ToolParam] = [
 ]
 
 
+ALLOWED_TOOLS = {t["name"] for t in TOOL_DEFINITIONS}
+
+
 def execute_tool(name: str, tool_input: dict[str, Any]) -> Any:
-    """Execute a tool by name with dynamic dispatch via getattr."""
+    """Execute a tool by name, restricted to the allowlist."""
+    if name not in ALLOWED_TOOLS:
+        return f"Error: unknown tool '{name}'"
     func = getattr(data_module, name, None)
     if func is None:
-        return f"Error: unknown tool '{name}'"
+        return f"Error: tool '{name}' not implemented"
     return func(**tool_input)
 
 

@@ -24,21 +24,10 @@ def test_execute_unknown_tool():
     assert "error" in result.lower() or "unknown" in result.lower()
 
 
-def test_execute_dispatches_dynamically():
-    """Verify dispatch uses getattr -- no hard-coded if/elif needed."""
+def test_execute_blocked_by_allowlist():
+    """Tools not in the allowlist are rejected even if they exist on the module."""
     result = execute_tool("get_available_cancers", {})
-    assert set(result) == {
-        "breast",
-        "colorectal",
-        "gastric",
-        "glioblastoma",
-        "lung",
-        "melanoma",
-        "ovarian",
-        "pancreatic",
-        "prostate",
-        "renal",
-    }
+    assert "error" in result.lower() or "unknown" in result.lower()
 
 
 def test_system_prompt_contains_all_cancer_types():
