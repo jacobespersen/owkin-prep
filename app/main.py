@@ -1,9 +1,14 @@
+import logging
+
 from fastapi import FastAPI
 from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
 
 from app import PROJECT_ROOT
 from app.routes.chat import router as chat_router
+
+logging.getLogger("app").setLevel(logging.INFO)
+logging.getLogger("app").addHandler(logging.StreamHandler())
 
 app = FastAPI()
 app.include_router(chat_router)
@@ -23,4 +28,6 @@ async def health():
 @app.get("/")
 async def root():
     return FileResponse(str(TEMPLATES_DIR / "index.html"))
+
+
 
