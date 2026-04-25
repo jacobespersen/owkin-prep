@@ -4,6 +4,8 @@ A natural-language chat interface that lets non-technical stakeholders query gen
 
 **Live demo:** [owkin.jacobespersen.com](https://owkin.jacobespersen.com) (deployed on a Kubernetes cluster running on my homelab)
 
+The core implementation was comfortably completed within the 4-hour time constraint. I spent some additional time setting up a proper CI/CD pipeline and deploying to my homelab Kubernetes cluster — not required, but it felt like a good opportunity to show how I'd ship something end-to-end.
+
 ## Quick Start
 
 **Requirements:** Docker and an Anthropic API key.
