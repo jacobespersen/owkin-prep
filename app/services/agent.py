@@ -11,6 +11,7 @@ MAX_ITERATIONS = 10
 
 def run_agent_loop(api_key: SecretStr, messages: list[MessageParam]) -> str:
     """Run the agent loop: call Claude, execute tools, repeat until text response."""
+    messages = list(messages)
     client = anthropic.Anthropic(api_key=api_key.get_secret_value())
     system_prompt = build_system_prompt()
 
@@ -36,12 +37,19 @@ def run_agent_loop(api_key: SecretStr, messages: list[MessageParam]) -> str:
         tool_results: list[ToolResultBlockParam] = []
         for block in response.content:
             if block.type == "tool_use":
-                result = execute_tool(block.name, block.input)
+                try:
+                    result = execute_tool(block.name, block.input)
+                    content = json.dumps(result)
+                    is_error = False
+                except Exception as e:
+                    content = f"Tool execution failed: {e}"
+                    is_error = True
                 tool_results.append(
                     ToolResultBlockParam(
                         type="tool_result",
                         tool_use_id=block.id,
-                        content=json.dumps(result),
+                        content=content,
+                        is_error=is_error,
                     )
                 )
 
