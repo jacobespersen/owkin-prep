@@ -13,3 +13,9 @@ def test_root_returns_html():
 def test_static_css_served():
     response = client.get("/static/css/style.css")
     assert response.status_code == 200
+
+
+def test_health_endpoint():
+    response = client.get("/health")
+    assert response.status_code == 200
+    assert response.json() == {"status": "ok"}

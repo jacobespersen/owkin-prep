@@ -9,10 +9,16 @@ from app.routes.chat import router as chat_router
 app = FastAPI()
 app.include_router(chat_router)
 
-TEMPLATES_DIR = Path("app/templates")
-STATIC_DIR = Path("app/static")
+_APP_DIR = Path(__file__).resolve().parent
+TEMPLATES_DIR = _APP_DIR / "templates"
+STATIC_DIR = _APP_DIR / "static"
 
 app.mount("/static", StaticFiles(directory=str(STATIC_DIR)), name="static")
+
+
+@app.get("/health")
+async def health():
+    return {"status": "ok"}
 
 
 @app.get("/")

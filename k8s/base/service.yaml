@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: owkin-agent
+  namespace: owkin-agent
+spec:
+  selector:
+    app: owkin-agent
+  ports:
+    - port: 8000
+      targetPort: 8000
+

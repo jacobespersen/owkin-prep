@@ -1,0 +1,48 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: owkin-agent
+  namespace: owkin-agent
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: owkin-agent
+  template:
+    metadata:
+      labels:
+        app: owkin-agent
+    spec:
+      containers:
+        - name: owkin-agent
+          image: ghcr.io/jacobespersen/owkin-agent:latest
+          ports:
+            - containerPort: 8000
+          resources:
+            requests:
+              memory: "128Mi"
+              cpu: "100m"
+            limits:
+              memory: "256Mi"
+              cpu: "500m"
+          startupProbe:
+            httpGet:
+              path: /health
+              port: 8000
+            initialDelaySeconds: 5
+            periodSeconds: 5
+            failureThreshold: 30
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 8000
+            periodSeconds: 5
+            failureThreshold: 3
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 8000
+            periodSeconds: 15
+            failureThreshold: 5
+
+
