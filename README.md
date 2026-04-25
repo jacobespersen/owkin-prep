@@ -130,7 +130,6 @@ The CI pipeline runs on every push and PR to `main`:
 
 | Step | Tool | Purpose |
 |------|------|---------|
-| Dockerfile linting | hadolint | Catches Dockerfile issues before build |
 | Lint + format | ruff | Code style and import ordering |
 | Type checking | mypy | Static type analysis |
 | Security scan | bandit | Catches common security issues |
@@ -205,3 +204,4 @@ For the app to move from PoC to production-ready, it needs a full observability 
 ### Reliability
 
 - Rate limiting on the `/chat` endpoint
+

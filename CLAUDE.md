@@ -93,7 +93,6 @@ docker compose up --build
 ## CI/CD
 
 - **CI workflow**: `.github/workflows/ci.yml` runs on push/PR to main.
-  - Dockerfile linting (hadolint for `Dockerfile` and `Dockerfile.test`)
   - Ruff (lint + format check)
   - mypy type checking
   - bandit security scanning
@@ -117,4 +116,5 @@ docker compose up --build
 ## Implementation Plans
 
 When creating implementation plans (via plan mode or otherwise), save them to `docs/superpowers/plans/` with a date prefix and descriptive slug (e.g., `2026-04-24-gene-cancer-agent.md`).
+
 

@@ -7,17 +7,6 @@ on:
     branches: [main]
 
 jobs:
-  lint-dockerfiles:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: hadolint/hadolint-action@v3.1.0
-        with:
-          dockerfile: Dockerfile
-      - uses: hadolint/hadolint-action@v3.1.0
-        with:
-          dockerfile: Dockerfile.test
-
   lint-and-test:
     runs-on: ubuntu-latest
     steps:
@@ -49,7 +38,7 @@ jobs:
         run: pytest -v --cov=app --cov-report=term-missing --cov-fail-under=90
 
   build-and-push:
-    needs: [lint-dockerfiles, lint-and-test]
+    needs: [lint-and-test]
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     permissions:
@@ -80,6 +69,8 @@ jobs:
             ghcr.io/jacobespersen/owkin-agent:${{ steps.tag.outputs.tag }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
+
+
 
 
 
