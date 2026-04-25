@@ -1,5 +1,3 @@
-import re
-
 from anthropic.types import MessageParam
 from pydantic import BaseModel, SecretStr, field_validator
 
@@ -12,12 +10,13 @@ class ChatRequest(BaseModel):
     @classmethod
     def validate_api_key(cls, v: str) -> str:
         v = v.strip()
-        if not re.match(r"^sk-ant-api03-[A-Za-z0-9_-]+$", v):
+        if "sk-ant-api" not in v:
             raise ValueError(
-                "Invalid Anthropic API key format. Expected 'sk-ant-api03-...'"
+                "Invalid Anthropic API key format. Key must contain 'sk-ant-api'."
             )
         return v
 
 
 class ChatResponse(BaseModel):
     response: str
+
