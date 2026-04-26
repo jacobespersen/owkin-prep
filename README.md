@@ -99,6 +99,7 @@ Two tools are exposed to Claude via the Anthropic tool-use schema, matching the 
 
 The original `get_expressions` function from the assignment did not filter by cancer type, which meant it would return incorrect median values for genes that appear across multiple cancer indications. I updated it to accept a `cancer_name` parameter so values are always scoped to the correct cancer context.
 
+**Note on spec deviation:** The assignment PDF defines `get_expressions(genes: List[str]) -> Dict[str, float]` with no `cancer_name` parameter. I deliberately deviated from this signature because the original implementation silently overwrites duplicate gene keys via `dict(zip(...))` — e.g. TP53 appears in 8 cancer indications, so calling `get_expressions(["TP53"])` would return only one of those values non-deterministically. A stricter reading of the spec would keep the original signature and disambiguate at the agent layer, or expose both versions behind a flag. I made a judgement call to fix the bug at the data-layer boundary; in a real engagement I'd flag this back to the spec author before changing the API.
 Tools are restricted to an explicit allowlist, and unknown tool names raise a `ValueError`. Expected tool execution errors are caught and returned to Claude as error results so it can recover gracefully.
 
 ### Safety & Validation
@@ -115,6 +116,10 @@ Tools are restricted to an explicit allowlist, and unknown tool names raise a `V
 - **Non-deterministic outputs** — LLM responses vary between runs, which means identical questions may produce slightly different answers. Acceptable for a conversational interface, but something to account for if consistency matters
 - **External API dependency** — the app requires an Anthropic API call for every interaction, so it can't run fully offline and is subject to API latency, rate limits, and availability
 - **Cost per query** — each conversation turn costs tokens. For a PoC this is negligible, but at scale the cost of multi-turn agentic conversations (especially with tool loops) adds up and needs monitoring
+
+### Dataset Coverage vs. Spec Questions
+
+The assignment lists "What is the median value expression of genes involved in **esophageal cancer**?" as one of the example queries, but the supplied CSV contains no esophageal entries. The 10 cancer types actually present are: breast, colorectal, gastric, glioblastoma, lung, melanoma, ovarian, pancreatic, prostate, and renal. The agent will correctly respond that no data is available for esophageal cancer when asked. I substituted `glioblastoma` for the corresponding suggestion chip in the welcome screen so the example queries are all answerable from the dataset as shipped.
 
 ### Data Layer
 

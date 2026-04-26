@@ -10,7 +10,7 @@ router = APIRouter()
 @router.post("/chat", response_model=ChatResponse)
 async def chat(request: ChatRequest):
     try:
-        response = run_agent_loop(request.api_key, request.messages)
+        response = await run_agent_loop(request.api_key, request.messages)
     except anthropic.AuthenticationError:
         raise HTTPException(status_code=401, detail="Invalid API key.")
     except anthropic.RateLimitError:

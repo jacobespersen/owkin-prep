@@ -10,9 +10,9 @@ class ChatRequest(BaseModel):
     @classmethod
     def validate_api_key(cls, v: str) -> str:
         v = v.strip()
-        if "sk-ant-api" not in v:
+        if not v.startswith("sk-ant-api"):
             raise ValueError(
-                "Invalid Anthropic API key format. Key must contain 'sk-ant-api'."
+                "Invalid Anthropic API key format. Key must start with 'sk-ant-api'."
             )
         return v
 

@@ -1,5 +1,6 @@
 import json
 import logging
+from functools import lru_cache
 
 import anthropic
 from anthropic.types import MessageParam, ToolResultBlockParam
@@ -12,10 +13,16 @@ logger = logging.getLogger(__name__)
 MAX_ITERATIONS = 10
 
 
-def run_agent_loop(api_key: SecretStr, messages: list[MessageParam]) -> str:
+@lru_cache(maxsize=16)
+def _get_async_client(api_key: str) -> anthropic.AsyncAnthropic:
+    """Return a cached AsyncAnthropic client for the given API key."""
+    return anthropic.AsyncAnthropic(api_key=api_key)
+
+
+async def run_agent_loop(api_key: SecretStr, messages: list[MessageParam]) -> str:
     """Run the agent loop: call Claude, execute tools, repeat until text response."""
     messages = list(messages)
-    client = anthropic.Anthropic(api_key=api_key.get_secret_value())
+    client = _get_async_client(api_key.get_secret_value())
     system_prompt = build_system_prompt()
 
     user_message = messages[-1]["content"] if messages else "(empty)"
@@ -24,7 +31,7 @@ def run_agent_loop(api_key: SecretStr, messages: list[MessageParam]) -> str:
     for iteration in range(1, MAX_ITERATIONS + 1):
         logger.info("Iteration %d/%d — calling Claude", iteration, MAX_ITERATIONS)
 
-        response = client.messages.create(
+        response = await client.messages.create(
             model="claude-haiku-4-5-20251001",
             max_tokens=1024,
             system=system_prompt,

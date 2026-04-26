@@ -13,9 +13,17 @@ spec:
       labels:
         app: owkin-agent
     spec:
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        runAsGroup: 1000
+        fsGroup: 1000
       containers:
         - name: owkin-agent
           image: ghcr.io/jacobespersen/owkin-agent:latest
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
           ports:
             - containerPort: 8000
           resources:
@@ -44,5 +52,6 @@ spec:
               port: 8000
             periodSeconds: 15
             failureThreshold: 5
+
 
 

@@ -1,4 +1,4 @@
-from unittest.mock import MagicMock, patch
+from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
 from app.services.agent import run_agent_loop
@@ -39,27 +39,40 @@ def _make_tool_use_response(tool_name, tool_input, tool_id="call_1"):
     return response
 
 
-@patch("app.services.agent.anthropic")
-def test_direct_text_response(mock_anthropic):
+def _mock_async_client(side_effect=None, return_value=None):
+    """Create a mock AsyncAnthropic client with async messages.create."""
     mock_client = MagicMock()
-    mock_anthropic.Anthropic.return_value = mock_client
-    mock_client.messages.create.return_value = _make_text_response("Hello!")
+    mock_client.messages.create = AsyncMock(
+        side_effect=side_effect, return_value=return_value
+    )
+    return mock_client
 
-    result = run_agent_loop(SecretStr("fake-key"), [{"role": "user", "content": "Hi"}])
+
+@patch("app.services.agent._get_async_client")
+@pytest.mark.anyio
+async def test_direct_text_response(mock_get_client):
+    mock_client = _mock_async_client(return_value=_make_text_response("Hello!"))
+    mock_get_client.return_value = mock_client
+
+    result = await run_agent_loop(
+        SecretStr("fake-key"), [{"role": "user", "content": "Hi"}]
+    )
     assert result == "Hello!"
 
 
 @patch("app.services.agent.execute_tool", return_value=["ALK", "KRAS"])
-@patch("app.services.agent.anthropic")
-def test_tool_use_then_text(mock_anthropic, mock_execute):
-    mock_client = MagicMock()
-    mock_anthropic.Anthropic.return_value = mock_client
-    mock_client.messages.create.side_effect = [
-        _make_tool_use_response("get_targets", {"cancer_name": "lung"}),
-        _make_text_response("Lung cancer genes: ALK, KRAS"),
-    ]
+@patch("app.services.agent._get_async_client")
+@pytest.mark.anyio
+async def test_tool_use_then_text(mock_get_client, mock_execute):
+    mock_client = _mock_async_client(
+        side_effect=[
+            _make_tool_use_response("get_targets", {"cancer_name": "lung"}),
+            _make_text_response("Lung cancer genes: ALK, KRAS"),
+        ]
+    )
+    mock_get_client.return_value = mock_client
 
-    result = run_agent_loop(
+    result = await run_agent_loop(
         SecretStr("fake-key"),
         [{"role": "user", "content": "lung genes?"}],
     )
@@ -67,33 +80,35 @@ def test_tool_use_then_text(mock_anthropic, mock_execute):
     mock_execute.assert_called_once_with("get_targets", {"cancer_name": "lung"})
 
 
-@patch("app.services.agent.anthropic")
-def test_max_iterations_exceeded(mock_anthropic):
-    mock_client = MagicMock()
-    mock_anthropic.Anthropic.return_value = mock_client
-    mock_client.messages.create.return_value = _make_tool_use_response(
-        "get_targets", {"cancer_name": "lung"}
+@patch("app.services.agent._get_async_client")
+@pytest.mark.anyio
+async def test_max_iterations_exceeded(mock_get_client):
+    mock_client = _mock_async_client(
+        return_value=_make_tool_use_response("get_targets", {"cancer_name": "lung"})
     )
+    mock_get_client.return_value = mock_client
 
     with pytest.raises(RuntimeError, match="max iterations"):
-        run_agent_loop(
+        await run_agent_loop(
             SecretStr("fake-key"),
             [{"role": "user", "content": "Hi"}],
         )
 
 
 @patch("app.services.agent.execute_tool", side_effect=ValueError("bad input"))
-@patch("app.services.agent.anthropic")
-def test_tool_error_sent_back_to_model(mock_anthropic, mock_execute):
+@patch("app.services.agent._get_async_client")
+@pytest.mark.anyio
+async def test_tool_error_sent_back_to_model(mock_get_client, mock_execute):
     """When a tool raises, the error is sent back so the model can self-correct."""
-    mock_client = MagicMock()
-    mock_anthropic.Anthropic.return_value = mock_client
-    mock_client.messages.create.side_effect = [
-        _make_tool_use_response("get_targets", {"cancer_name": "lung"}),
-        _make_text_response("Sorry, that tool failed."),
-    ]
+    mock_client = _mock_async_client(
+        side_effect=[
+            _make_tool_use_response("get_targets", {"cancer_name": "lung"}),
+            _make_text_response("Sorry, that tool failed."),
+        ]
+    )
+    mock_get_client.return_value = mock_client
 
-    result = run_agent_loop(
+    result = await run_agent_loop(
         SecretStr("fake-key"),
         [{"role": "user", "content": "lung genes?"}],
     )

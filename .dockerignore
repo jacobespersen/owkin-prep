@@ -1,0 +1,36 @@
+# VCS / IDE
+.git
+.gitignore
+.idea
+.vscode
+
+# Build / cache artefacts
+__pycache__
+*.pyc
+*.pyo
+*.pyd
+.pytest_cache
+.ruff_cache
+.mypy_cache
+.coverage
+htmlcov
+*.egg-info
+build
+dist
+
+# Local environments
+.venv
+venv
+env
+
+# OS junk
+.DS_Store
+Thumbs.db
+
+# Project files that shouldn't ship in any image (including test image)
+*.pdf
+docs
+
+# Kubernetes manifests are not needed inside the runtime image
+k8s
+

@@ -1,4 +1,4 @@
-from unittest.mock import MagicMock, patch
+from unittest.mock import AsyncMock, MagicMock, patch
 
 import anthropic
 from app.main import app
@@ -25,7 +25,7 @@ def test_chat_invalid_api_key():
     assert response.status_code == 422
 
 
-@patch("app.routes.chat.run_agent_loop", return_value="Hello!")
+@patch("app.routes.chat.run_agent_loop", new_callable=AsyncMock, return_value="Hello!")
 def test_chat_success(mock_agent):
     response = client.post(
         "/chat",
@@ -41,6 +41,7 @@ def test_chat_success(mock_agent):
 
 @patch(
     "app.routes.chat.run_agent_loop",
+    new_callable=AsyncMock,
     side_effect=RuntimeError("Loop exceeded"),
 )
 def test_chat_agent_error(mock_agent):
@@ -56,6 +57,7 @@ def test_chat_agent_error(mock_agent):
 
 @patch(
     "app.routes.chat.run_agent_loop",
+    new_callable=AsyncMock,
     side_effect=anthropic.AuthenticationError(
         message="invalid key", response=_mock_response(401), body=None
     ),
@@ -74,6 +76,7 @@ def test_chat_bad_api_key_returns_401(mock_agent):
 
 @patch(
     "app.routes.chat.run_agent_loop",
+    new_callable=AsyncMock,
     side_effect=anthropic.RateLimitError(
         message="rate limited", response=_mock_response(429), body=None
     ),
